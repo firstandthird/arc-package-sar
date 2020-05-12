@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 const process = require('process');
 const parse = require('@architect/parser');
-const pkg = require('@architect/package');
+const deploy = require('@architect/deploy');
 const fs = require('fs');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
@@ -18,7 +18,18 @@ async function command() {
     
     const result = parse(text);
 
-    const sam = pkg(result);
+    console.log('Building Deploy Package...');
+    let region = 'us-east-1';
+    result.aws.forEach(c => {
+        if (c[0] === 'region') {
+            region = c[1];
+        }
+    });
+    process.env.AWS_REGION = region;
+    await deploy.sam({ isDryRun: true, production: true});
+    console.log('  Complete!');
+    
+    const sam = require(`${cwd}/sam.json`);
 
     // Inject Metadata
     sam.Metadata = {
@@ -85,7 +96,7 @@ async function command() {
                 ARC_CLOUDFORMATION: {
                     Ref: 'AWS::StackName'
                 },
-                ARC_APP_NAME: pkg.name,
+                ARC_APP_NAME: packageObj.name,
                 ARC_HTTP: 'aws_proxy',
                 NODE_ENV: 'production',
                 SESSION_TABLE_NAME: 'jwe',
