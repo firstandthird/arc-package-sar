@@ -1,0 +1,27 @@
+{
+  "name": "arc-package-sar",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "sar": "./cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/firstandthird/arc-package-sar.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/firstandthird/arc-package-sar/issues"
+  },
+  "homepage": "https://github.com/firstandthird/arc-package-sar#readme",
+  "dependencies": {
+    "@architect/package": "^1.3.2",
+    "@architect/parser": "^2.1.3"
+  }
+}
