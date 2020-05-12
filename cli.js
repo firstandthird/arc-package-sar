@@ -18,8 +18,6 @@ async function command() {
     
     const result = parse(text);
 
-    console.log(result); 
-
     const sam = pkg(result);
 
     // Inject Metadata
@@ -162,7 +160,18 @@ async function command() {
     }
 
     fs.writeFileSync('./package.sam', JSON.stringify(sam, null, 2));
+    
+    console.log('');
 
+    console.log('Package Command:');
+    console.log(`sam package --template-file package.sam --output-template-file template.yaml --s3-bucket ${packageObj.name}-template --force-upload`);
+
+    console.log('');
+
+    console.log('Publish Command');
+    console.log('sam publish --template template.yaml --region us-east-1');
+
+    console.log('');
     console.log('complete');
 }
 
