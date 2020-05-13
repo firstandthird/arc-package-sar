@@ -17,11 +17,11 @@ const packageObj = require(`${cwd}/package.json`);
 async function command() {
   const text = fs.readFileSync('./.arc').toString();
 
-  const result = parse(text);
+  const arc = parse(text);
 
   console.log('Building Deploy Package...');
   let region = 'us-east-1';
-  result.aws.forEach(c => {
+  arc.aws.forEach(c => {
     if (c[0] === 'region') {
       region = c[1];
     }
@@ -48,7 +48,7 @@ async function command() {
     }
   };
 
-  if (result.sarStatic) {
+  if (arc.sarStatic) {
     // Running npm build
     console.log('Running Build Step');
     const buildRes = await exec('npm run build');
@@ -133,11 +133,11 @@ async function command() {
     };
   }
 
-  if (result.sarParams) {
+  if (arc.sarParams) {
     if (!sam.Parameters) {
       sam.Parameters = {};
     }
-    result.sarParams.forEach(p => {
+    arc.sarParams.forEach(p => {
       const [name, desc] = p;
       const objName = utils.toParam(name);
       sam.Parameters[objName] = {
