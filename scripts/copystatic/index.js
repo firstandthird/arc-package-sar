@@ -1,8 +1,11 @@
+/* eslint-disable no-console, import/no-unresolved */
 const AWS = require('aws-sdk');
 const fs = require('fs');
 const globby = require('globby');
 const s3 = new AWS.S3();
 const response = require('cfn-response');
+
+const sleep = (milliseconds) => new Promise(resolve => setTimeout(resolve, milliseconds));
 
 exports.handler = async (event, context) => {
   // For Delete requests, immediately send a SUCCESS response.
@@ -11,11 +14,12 @@ exports.handler = async (event, context) => {
     return;
   }
 
+  console.log(`REQUEST RECEIVED: ${JSON.stringify(event)}`);
   const files = await globby('./static/**/*');
 
   const promises = files.map(file => {
     const data = fs.readFileSync(file);
-
+    console.log(`Putting file: ${file}`);
     return new Promise((resolve, reject) => {
       s3.putObject({
         Bucket: process.env.ARC_STATIC_BUCKET,
@@ -25,7 +29,7 @@ exports.handler = async (event, context) => {
       }, (err, _resp) => {
         if (err) {
           console.log(err, err.stack);
-          response.send(event, context, 'FAILED', { error: err.stack });
+          response.send(event, context, response.FAILED, { error: err.stack });
           return reject(err);
         }
         return resolve();
@@ -35,5 +39,7 @@ exports.handler = async (event, context) => {
 
   await Promise.all(promises);
 
-  response.send(event, context, 'SUCCESS', {});
+  response.send(event, context, response.SUCCESS, {});
+
+  await sleep(2500);
 };
