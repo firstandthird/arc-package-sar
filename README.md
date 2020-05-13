@@ -21,8 +21,10 @@ Will read the `.arc` file, and get everything ready to push to the repository. O
 
 Indicates that static files are present and need to be deployed. Runs `npm build` and copies anything that gets generated into the `./public` folder to the arc-s3 endpoint.
 
-```@sarParams
+```
+@sarParams
 AUTH_TOKEN "Auth token used for requests, ex ?token=<AuthToken>"
-WEBHOOK "Webhooks are external web hosts that page"```
+WEBHOOK "Webhooks are external web hosts that page"
+```
 
 Additional params that need to be passed to the functions prior to deployment of the package. Adds params to the `sam.Parameters` object.
