@@ -5,6 +5,8 @@ const globby = require('globby');
 const s3 = new AWS.S3();
 const response = require('cfn-response');
 
+const mime = require('mime-types');
+
 const sleep = (milliseconds) => new Promise(resolve => setTimeout(resolve, milliseconds));
 
 exports.handler = async (event, context) => {
@@ -31,11 +33,13 @@ exports.handler = async (event, context) => {
       if (fp) {
         key = (fpMap[key]) ? fpMap[key] : key;
       }
+      const contentType = mime.lookup(key) || 'application/octet-stream';
       s3.putObject({
         Bucket: process.env.ARC_STATIC_BUCKET,
         Key: key,
         Body: Buffer.from(data, 'base64'),
-        ACL: 'public-read'
+        ACL: 'public-read',
+        ContentType: contentType
       }, (err, _resp) => {
         if (err) {
           console.log(err, err.stack);
