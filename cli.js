@@ -13,6 +13,7 @@ const cwd = process.cwd();
 const dir = __dirname;
 
 const packageObj = require(`${cwd}/package.json`);
+packageObj._name = utils.sanitizeName(packageObj.name);
 
 async function command() {
   const text = fs.readFileSync('./.arc').toString();
@@ -42,7 +43,7 @@ async function command() {
   // Inject Metadata
   sam.Metadata = {
     'AWS::ServerlessRepo::Application': {
-      Name: packageObj.name,
+      Name: packageObj._name,
       Description: packageObj.description,
       Author: packageObj.author.replace('&', 'and'),
       SpdxLicenseId: packageObj.license,
@@ -107,7 +108,7 @@ async function command() {
             ARC_CLOUDFORMATION: {
               Ref: 'AWS::StackName'
             },
-            ARC_APP_NAME: packageObj.name,
+            ARC_APP_NAME: packageObj._name,
             ARC_HTTP: 'aws_proxy',
             NODE_ENV: 'production',
             SESSION_TABLE_NAME: 'jwe',
@@ -187,7 +188,7 @@ async function command() {
   console.log('');
 
   console.log('Package Command:');
-  console.log(`sam package --template-file package.sam --output-template-file template.yaml --s3-bucket ${packageObj.name}-template --force-upload`);
+  console.log(`sam package --template-file package.sam --output-template-file template.yaml --s3-bucket ${packageObj._name}-template --force-upload`);
 
   console.log('');
 
