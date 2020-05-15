@@ -11,19 +11,29 @@ exports.handler = async (event, context) => {
   // For Delete requests, immediately send a SUCCESS response.
   if (event.RequestType === 'Delete') {
     response.send(event, context, 'SUCCESS');
+    await sleep(2500);
     return;
   }
 
   console.log(`REQUEST RECEIVED: ${JSON.stringify(event)}`);
   const files = await globby('./static/**/*');
 
+  const fp = process.env.FINGERPRINT;
+  let fpMap = {};
+  if (fp) {
+    fpMap = require('./static/static.json');
+  }
   const promises = files.map(file => {
     const data = fs.readFileSync(file);
     console.log(`Putting file: ${file}`);
     return new Promise((resolve, reject) => {
+      let key = file.replace('./static/', '');
+      if (fp) {
+        key = (fpMap[key]) ? fpMap[key] : key;
+      }
       s3.putObject({
         Bucket: process.env.ARC_STATIC_BUCKET,
-        Key: file.replace('./static/', ''),
+        Key: key,
         Body: Buffer.from(data, 'base64'),
         ACL: 'public-read'
       }, (err, _resp) => {
@@ -32,6 +42,9 @@ exports.handler = async (event, context) => {
           response.send(event, context, response.FAILED, { error: err.stack });
           return reject(err);
         }
+
+        console.log(_resp);
+        console.log(`Success: ${file}`);
         return resolve();
       });
     });
