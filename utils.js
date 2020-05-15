@@ -6,5 +6,9 @@ module.exports = {
     });
 
     return strArr.join('');
+  },
+  sanitizeName: (s) => {
+    const regexp = /@[A-Za-z-]*\//gi;
+    return s.replace(regexp, '');
   }
 };
