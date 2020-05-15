@@ -18,7 +18,14 @@ async function command() {
   const text = fs.readFileSync('./.arc').toString();
 
   const arc = parse(text);
-
+  let fingerprint = false;
+  if (arc.static) {
+    arc.static.forEach(r => {
+      if (r[0] === 'fingerprint') {
+        fingerprint = r[1];
+      }
+    });
+  }
   console.log('Building Deploy Package...');
   let region = 'us-east-1';
   arc.aws.forEach(c => {
@@ -75,6 +82,9 @@ async function command() {
       console.log(initResult.stderr);
     }
     console.log(initResult.stdout);
+    if (fingerprint) {
+      console.log('Asset Fingerprinting Enabled');
+    }
     console.log('  Complete!');
 
     sam.Resources.CopyStaticAssets = {
@@ -106,7 +116,8 @@ async function command() {
             },
             S3_BUCKET: {
               Ref: 'ArcS3Bucket'
-            }
+            },
+            FINGERPRINT: fingerprint
           }
         },
         Role: {
