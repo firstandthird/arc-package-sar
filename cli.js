@@ -61,8 +61,8 @@ async function command() {
     console.log('Running Build Step');
     const buildRes = await exec('npm run build');
     if (buildRes.stderr) {
+      console.log('Build Errors!');
       console.log(buildRes.stderr);
-      throw new Error('Build Failed');
     }
     console.log(buildRes.stdout);
     console.log('  Complete!');
