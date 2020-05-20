@@ -70,8 +70,8 @@ async function command() {
     console.log('Copying Static Files');
     const cpResult = await exec(`rm -rf ${cwd}/scripts && mkdir ${cwd}/scripts && cp -rv ${dir}/scripts/copystatic ${cwd}/scripts && rm -rf ${cwd}/scripts/copystatic/static && cp -rv ${cwd}/public ${cwd}/scripts/copystatic/static`);
     if (cpResult.stderr) {
+      console.log('  Build Error Occured');
       console.log(cpResult.stderr);
-      throw new Error('Build Failed');
     }
     console.log(cpResult.stdout);
     console.log('  Complete!');
@@ -114,9 +114,6 @@ async function command() {
             SESSION_TABLE_NAME: 'jwe',
             ARC_STATIC_BUCKET: {
               Ref: 'StaticBucket'
-            },
-            S3_BUCKET: {
-              Ref: 'ArcS3Bucket'
             },
             FINGERPRINT: fingerprint
           }
