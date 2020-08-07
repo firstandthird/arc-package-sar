@@ -130,7 +130,7 @@ async function command() {
         },
       }
     };
-    const id = Math.ceil(Math.random() * 1000);
+    const id = Math.ceil(Math.random() * 10000);
     sam.Resources[`InvokeCopyStaticAssets${id}`] = {
       Type: 'AWS::CloudFormation::CustomResource',
       DependsOn: [
